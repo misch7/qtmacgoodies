@@ -1,14 +1,20 @@
-#include "macpreferenceswindow.h"
 #include <QApplication>
 #include <QtWidgets>
 
+#include "macpreferenceswindow.h"
+#include "macstandardicon.h"
+
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
+    app.setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     MacPreferencesWindow w;
 
-    QIcon icon("/Applications//iBooks.app/Contents/PlugIns/iBAReaderKit.bundle/Contents/Resources/play-small-64-P.png");
+    QIcon generalIcon = MacStandardIcon::icon(MacStandardIcon::PreferencesGeneral);
+    QIcon accountsIcon = MacStandardIcon::icon(MacStandardIcon::UserAccounts);
+    QIcon networkIcon = MacStandardIcon::icon(MacStandardIcon::Network);
+
     QWidget foo;
     QPalette pal(foo.palette());
     pal.setColor(QPalette::Background, Qt::blue);
@@ -22,11 +28,11 @@ int main(int argc, char *argv[])
     QPushButton btn2("ZapZap");
     btn2.setFixedSize(300, 200);
 
-    w.addPreferencesPanel(icon, "General", &foo);
-    w.addPreferencesPanel(icon, "Accounts", &btn);
-    w.addPreferencesPanel(icon, "Accounts", &btn2);
+    w.addPreferencesPanel(generalIcon, "General", &foo);
+    w.addPreferencesPanel(accountsIcon, "Accounts", &btn);
+    w.addPreferencesPanel(networkIcon, "Network", &btn2);
 
     w.show();
 
-    return a.exec();
+    return app.exec();
 }

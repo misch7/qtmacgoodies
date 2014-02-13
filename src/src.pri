@@ -6,9 +6,15 @@
 
 QT += core gui
 QT += widgets
+QT += macextras
 
-HEADERS += $$PWD/macpreferenceswindow.h
-OBJECTIVE_SOURCES += $$PWD/macpreferenceswindow.mm
+HEADERS += \
+    $$PWD/macstandardicon.h \
+    $$PWD/macpreferenceswindow.h
+
+OBJECTIVE_SOURCES += \
+    $$PWD/macstandardicon.mm \
+    $$PWD/macpreferenceswindow.mm
 
 INCLUDEPATH += $$PWD
 
