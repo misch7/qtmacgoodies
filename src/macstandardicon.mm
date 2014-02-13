@@ -71,18 +71,22 @@ static NSString *macIconNames[] = {
     nil
 };
 
-QIcon MacStandardIcon::icon(MacStandardIconType icon)
+QIcon MacStandardIcon::icon(MacStandardIconType icon, const QSize &size)
 {
     NSImage *image = [NSImage imageNamed:macIconNames[icon]];
 
     QList<NSRect> desiredRects;
 
-    NSRect imageRect = NSMakeRect(0, 0, image.size.width, image.size.height);
-    desiredRects.append(imageRect);
-    while (imageRect.size.width > 32) {
-        imageRect.size.width /= 2;
-        imageRect.size.height /= 2;
+    if (size.isEmpty()) {
+        NSRect imageRect = NSMakeRect(0, 0, image.size.width, image.size.height);
         desiredRects.append(imageRect);
+        while (imageRect.size.width > 32) {
+            imageRect.size.width /= 2;
+            imageRect.size.height /= 2;
+            desiredRects.append(imageRect);
+        }
+    } else {
+        desiredRects.append(NSMakeRect(0, 0, size.width(), size.height()));
     }
 
     QIcon result;

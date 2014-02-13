@@ -75,7 +75,7 @@ public:
         LastIcon = ShareTemplate
     };
 
-    static QIcon icon(MacStandardIconType icon);
+    static QIcon icon(MacStandardIconType icon, const QSize &size = QSize());
 };
 
 #endif // MAC_STANDARD_ICON_H
