@@ -18,8 +18,13 @@ int main(int argc, char *argv[])
     QPushButton btn("Foobar");
     btn.setFixedSize(300, 200);
 
+
+    QPushButton btn2("ZapZap");
+    btn2.setFixedSize(300, 200);
+
     w.addPreferencesPanel(icon, "General", &foo);
     w.addPreferencesPanel(icon, "Accounts", &btn);
+    w.addPreferencesPanel(icon, "Accounts", &btn2);
 
     w.show();
 
