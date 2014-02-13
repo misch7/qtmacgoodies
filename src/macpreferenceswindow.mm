@@ -28,6 +28,7 @@ public:
     { }
 
     void displayPanel(int panelIndex);
+    QSize guesstimateSizeHint(QWidget *w);
 
     MacPreferencesWindow *q;
 
@@ -85,7 +86,7 @@ void MacPreferencesWindow::setCurrentPanelIndex(int panelIndex)
     d->displayPanel(panelIndex);
 }
 
-QSize guesstimateSizeHint(QWidget *w)
+QSize MacPreferencesWindowPrivate::guesstimateSizeHint(QWidget *w)
 {
     if (w->minimumSize() == w->maximumSize())
         return w->minimumSize();
@@ -111,7 +112,9 @@ void MacPreferencesWindowPrivate::displayPanel(int panelIndex)
     oldPanel.windowSize = frame.size;
     NSSize newSize = newPanel.windowSize;
     if (newSize.width == 0 || newSize.height == 0) {
-        QSize panelSize = guesstimateSizeHint(newPanel.panel);
+        QSize panelSize = q->sizeHintForPanel(panelIndex);
+        if (panelSize.isEmpty())
+            panelSize = guesstimateSizeHint(newPanel.panel);
         newSize = NSMakeSize(panelSize.width(), panelSize.height() + toolbar->size().height());
     }
 
@@ -142,6 +145,8 @@ void MacPreferencesWindow::toolButtonClicked()
     }
 
     setCurrentPanelIndex(panelIndex);
+
+    emit activated(panelIndex);
 }
 
 bool MacPreferencesWindow::event(QEvent *event)
@@ -155,4 +160,10 @@ bool MacPreferencesWindow::event(QEvent *event)
     }
 
     return QMainWindow::event(event);
+}
+
+QSize MacPreferencesWindow::sizeHintForPanel(int panelIndex)
+{
+    Q_UNUSED(panelIndex);
+    return QSize();
 }

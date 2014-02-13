@@ -19,7 +19,11 @@ public:
     int currentPanelIndex() const;
     void setCurrentPanelIndex(int currentPanelIndex);
 
+    virtual QSize sizeHintForPanel(int panelIndex);
+
 signals:
+    void activated(int panelIndex);
+
 private slots:
     void toolButtonClicked();
 
