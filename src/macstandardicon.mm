@@ -75,17 +75,19 @@ QIcon MacStandardIcon::icon(MacStandardIconType icon)
 {
     NSImage *image = [NSImage imageNamed:macIconNames[icon]];
 
-    NSRect desiredRects[] = {
-        NSMakeRect(0, 0, 32, 32),
-        NSMakeRect(0, 0, 64, 64),
-        NSMakeRect(0, 0, image.size.width, image.size.height)
-    };
+    QList<NSRect> desiredRects;
+
+    NSRect imageRect = NSMakeRect(0, 0, image.size.width, image.size.height);
+    desiredRects.append(imageRect);
+    while (imageRect.size.width > 32) {
+        imageRect.size.width /= 2;
+        imageRect.size.height /= 2;
+        desiredRects.append(imageRect);
+    }
 
     QIcon result;
 
-    for (unsigned long i = 0; i < sizeof(desiredRects)/sizeof(desiredRects[0]); ++i) {
-        NSRect rect = desiredRects[i];
-
+    foreach (NSRect rect, desiredRects) {
         CGImageRef cgimage = [image CGImageForProposedRect:&rect context:nil hints:nil];
         QPixmap pixmap = QtMac::fromCGImageRef(cgimage);
         CFRelease(cgimage);
