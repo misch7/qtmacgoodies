@@ -1,2 +1,4 @@
 TEMPLATE = subdirs
 SUBDIRS = examples
+
+OTHER_FILES += LICENSE
