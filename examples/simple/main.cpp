@@ -12,17 +12,11 @@ int main(int argc, char *argv[])
     MacPreferencesWindow w;
 
     QIcon generalIcon = MacStandardIcon::icon(MacStandardIcon::PreferencesGeneral);
-    QIcon accountsIcon = MacStandardIcon::icon(MacStandardIcon::UserAccounts);
-    QIcon quickLookIcon = MacStandardIcon::icon(MacStandardIcon::QuickLookTemplate);
+    QIcon quickLookIcon = MacStandardIcon::icon(MacStandardIcon::Info);
 
-    QWidget foo;
-    QPalette pal(foo.palette());
-    pal.setColor(QPalette::Background, Qt::blue);
-    foo.setAutoFillBackground(true);
-    foo.setPalette(pal);
-
-    QPushButton btn("Foobar");
-    btn.setFixedSize(300, 200);
+    QLabel blueWidget("Note: the window has fixed size");
+    blueWidget.setAlignment(Qt::AlignCenter);
+    blueWidget.setFixedSize(300, 150);
 
     QSize maxIconSize;
     QList<QIcon> icons;
@@ -36,6 +30,9 @@ int main(int argc, char *argv[])
                 maxIconSize = size;
         }
     }
+
+    QWidget iconsWidget;
+    QVBoxLayout *layout = new QVBoxLayout(&iconsWidget);
     QListWidget iconListWidget;
     iconListWidget.setIconSize(maxIconSize);
     iconListWidget.setResizeMode(QListWidget::Adjust);
@@ -46,10 +43,12 @@ int main(int argc, char *argv[])
         QListWidgetItem *item = new QListWidgetItem(icon, QString());
         iconListWidget.addItem(item);
     }
+    QLabel iconsWidgetLabel("Note: the window is resizable");
+    layout->addWidget(&iconListWidget);
+    layout->addWidget(&iconsWidgetLabel);
 
-    w.addPreferencesPanel(generalIcon, "General", &foo);
-    w.addPreferencesPanel(accountsIcon, "Accounts", &btn);
-    w.addPreferencesPanel(quickLookIcon, "Network", &iconListWidget);
+    w.addPreferencesPanel(generalIcon, "General", &blueWidget);
+    w.addPreferencesPanel(quickLookIcon, "Icons", &iconsWidget);
 
     w.show();
 

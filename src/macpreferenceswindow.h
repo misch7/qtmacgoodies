@@ -29,6 +29,7 @@ private slots:
 
 protected:
     bool event(QEvent *event);
+    void setVisible(bool visible);
 
 private:
     MacPreferencesWindowPrivate *d;

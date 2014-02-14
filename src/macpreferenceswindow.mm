@@ -29,6 +29,8 @@ public:
 
     void displayPanel(int panelIndex);
     QSize guesstimateSizeHint(QWidget *w);
+    bool isResizable(QWidget *w);
+    QSize windowSizeForPanel(int panelIndex);
 
     MacPreferencesWindow *q;
 
@@ -93,34 +95,61 @@ QSize MacPreferencesWindowPrivate::guesstimateSizeHint(QWidget *w)
     return w->sizeHint();
 }
 
+bool MacPreferencesWindowPrivate::isResizable(QWidget *w)
+{
+    return w->minimumSize() != w->maximumSize();
+}
+
+QSize MacPreferencesWindowPrivate::windowSizeForPanel(int panelIndex)
+{
+    const PanelInfo &panelInfo = panels[panelIndex];
+    QSize size = QSize(panelInfo.windowSize.width, panelInfo.windowSize.height);
+    if (size.width() == 0 || size.height() == 0) {
+        QSize panelSize = q->sizeHintForPanel(panelIndex);
+        size = QSize(panelSize.width(), panelSize.height() + toolbar->size().height());
+    }
+    return size;
+}
+
 void MacPreferencesWindowPrivate::displayPanel(int panelIndex)
 {
     PanelInfo &oldPanel = panels[currentPanelIndex];
     PanelInfo &newPanel = panels[panelIndex];
 
-    currentPanelIndex = panelIndex;
+    bool isUpdatingTheAlreadyVisiblePanel = panelIndex == currentPanelIndex;
 
-    oldPanel.action->setChecked(false);
-    newPanel.action->setChecked(true);
+    currentPanelIndex = panelIndex;
 
     NSView *view = reinterpret_cast<NSView *>(q->effectiveWinId());
     NSRect frame = view.window.frame;
 
-    oldPanel.panel->hide();
-    layout->removeWidget(oldPanel.panel);
+    static const int TitlebarHeight = 22;
 
-    oldPanel.windowSize = frame.size;
-    NSSize newSize = newPanel.windowSize;
-    if (newSize.width == 0 || newSize.height == 0) {
-        QSize panelSize = q->sizeHintForPanel(panelIndex);
-        if (panelSize.isEmpty())
-            panelSize = guesstimateSizeHint(newPanel.panel);
-        newSize = NSMakeSize(panelSize.width(), panelSize.height() + toolbar->size().height());
+    if (!isUpdatingTheAlreadyVisiblePanel) {
+        oldPanel.action->setChecked(false);
+
+        oldPanel.panel->hide();
+        layout->removeWidget(oldPanel.panel);
+
+        oldPanel.windowSize = frame.size;
+        // sigh. Ugly. Workaround. The titlebar height is included into the frame, which is fine, but Qt expects
+        oldPanel.windowSize.height -= TitlebarHeight;
     }
 
+    newPanel.action->setChecked(true);
+
+    QSize newSize = windowSizeForPanel(panelIndex);
     NSPoint topLeft = NSMakePoint(frame.origin.x, frame.origin.y + frame.size.height);
-    NSRect newFrame = NSMakeRect(topLeft.x, topLeft.y - newSize.height, newSize.width, newSize.height);
+    NSRect newFrame = NSMakeRect(topLeft.x, topLeft.y - (newSize.height()+TitlebarHeight),
+                                 newSize.width(), newSize.height()+TitlebarHeight);
     [view.window setFrame:newFrame display:YES animate:YES];
+
+    if (isResizable(newPanel.panel)) {
+        q->setMinimumSize(QSize(0, 0));
+        q->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+    } else {
+        q->setFixedSize(QSize(newSize.width(), newSize.height()));
+    }
 
     dispatch_async(dispatch_get_main_queue(), ^{
         layout->addWidget(newPanel.panel);
@@ -162,8 +191,21 @@ bool MacPreferencesWindow::event(QEvent *event)
     return QMainWindow::event(event);
 }
 
+void MacPreferencesWindow::setVisible(bool visible)
+{
+    if (d->currentPanelIndex < d->panels.size()) {
+        const PanelInfo &panelInfo = d->panels[d->currentPanelIndex];
+        if (!d->isResizable(panelInfo.panel)) {
+            QSize size = d->windowSizeForPanel(d->currentPanelIndex);
+            setFixedSize(QSize(size.width(), size.height()-22));
+        }
+    }
+    QMainWindow::setVisible(visible);
+}
+
 QSize MacPreferencesWindow::sizeHintForPanel(int panelIndex)
 {
-    Q_UNUSED(panelIndex);
-    return QSize();
+    Q_ASSERT(panelIndex >= 0 && panelIndex < d->panels.size());
+    const PanelInfo &panelInfo = d->panels[panelIndex];
+    return d->guesstimateSizeHint(panelInfo.panel);
 }
