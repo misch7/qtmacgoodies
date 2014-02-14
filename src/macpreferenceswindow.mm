@@ -60,6 +60,7 @@ public:
     QSize guesstimateSizeHint(QWidget *w);
     bool isResizable(QWidget *w);
     QSize windowSizeForPanel(int panelIndex);
+    void addCurrentPanelWidget();
 
     MacPreferencesWindow *q;
 
@@ -183,9 +184,15 @@ void MacPreferencesWindowPrivate::displayPanel(int panelIndex)
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        layout->addWidget(newPanel.panel);
-         newPanel.panel->show();
+        addCurrentPanelWidget();
     });
+}
+
+void MacPreferencesWindowPrivate::addCurrentPanelWidget()
+{
+    const PanelInfo &panelInfo = panels[currentPanelIndex];
+    layout->addWidget(panelInfo.panel);
+    panelInfo.panel->show();
 }
 
 void MacPreferencesWindow::toolButtonClicked()
