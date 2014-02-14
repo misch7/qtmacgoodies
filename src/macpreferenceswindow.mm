@@ -91,7 +91,7 @@ MacPreferencesWindow::~MacPreferencesWindow()
     delete d;
 }
 
-void MacPreferencesWindow::addPreferencesPanel(const QIcon &icon, const QString &title, QWidget *widget)
+int MacPreferencesWindow::addPreferencesPanel(const QIcon &icon, const QString &title, QWidget *widget)
 {
     QAction *action = d->toolbar->addAction(icon, title);
 
@@ -99,6 +99,8 @@ void MacPreferencesWindow::addPreferencesPanel(const QIcon &icon, const QString 
     connect(action, SIGNAL(triggered(bool)), this, SLOT(toolButtonClicked()));
 
     d->panels.append(PanelInfo(action, widget));
+
+    return d->panels.size()-1;
 }
 
 int MacPreferencesWindow::currentPanelIndex() const
@@ -237,4 +239,36 @@ QSize MacPreferencesWindow::sizeHintForPanel(int panelIndex)
     Q_ASSERT(panelIndex >= 0 && panelIndex < d->panels.size());
     const PanelInfo &panelInfo = d->panels[panelIndex];
     return d->guesstimateSizeHint(panelInfo.panel);
+}
+
+QIcon MacPreferencesWindow::preferencesPanelIcon(int panelIndex) const
+{
+    if (panelIndex < 0 || panelIndex >= d->panels.size())
+        return QIcon();
+
+    return d->panels[panelIndex].action->icon();
+}
+
+void MacPreferencesWindow::setPreferencesPanelIcon(int panelIndex, const QIcon &icon)
+{
+    if (panelIndex < 0 || panelIndex >= d->panels.size())
+        return;
+
+    d->panels[panelIndex].action->setIcon(icon);
+}
+
+QString MacPreferencesWindow::preferencesPanelTitle(int panelIndex) const
+{
+    if (panelIndex < 0 || panelIndex >= d->panels.size())
+        return QString();
+
+    return d->panels[panelIndex].action->text();
+}
+
+void MacPreferencesWindow::setPreferencesPanelTitle(int panelIndex, const QString &title)
+{
+    if (panelIndex < 0 || panelIndex >= d->panels.size())
+        return;
+
+    d->panels[panelIndex].action->setText(title);
 }

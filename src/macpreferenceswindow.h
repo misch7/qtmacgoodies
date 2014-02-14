@@ -43,7 +43,13 @@ public:
     explicit MacPreferencesWindow(QWidget *parent = 0);
     ~MacPreferencesWindow();
 
-    void addPreferencesPanel(const QIcon &icon, const QString &title, QWidget *widget);
+    int addPreferencesPanel(const QIcon &icon, const QString &title, QWidget *widget);
+
+    QIcon preferencesPanelIcon(int panelIndex) const;
+    void setPreferencesPanelIcon(int panelIndex, const QIcon &icon);
+
+    QString preferencesPanelTitle(int panelIndex) const;
+    void setPreferencesPanelTitle(int panelIndex, const QString &title);
 
     int currentPanelIndex() const;
     void setCurrentPanelIndex(int currentPanelIndex);
