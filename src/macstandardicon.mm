@@ -103,7 +103,10 @@ static NSString *macIconNames[] = {
 QIcon MacStandardIcon::icon(MacStandardIconType icon, const QSize &size)
 {
     NSImage *image = [NSImage imageNamed:macIconNames[icon]];
-
+    if (!image) {
+        qWarning("MacStandardIcon: something is wrong around here (%d)", (int)icon);
+        return QIcon();
+    }
     QList<NSRect> desiredRects;
 
     if (size.isEmpty()) {
