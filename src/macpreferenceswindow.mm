@@ -82,9 +82,11 @@ MacPreferencesWindow::MacPreferencesWindow(QWidget *parent)
     setCentralWidget(centralWidget);
 
     d->toolbar = addToolBar("maintoolbar");
+    d->toolbar->setFloatable(false);
     d->toolbar->setMovable(false);
     d->toolbar->setIconSize(QSize(32, 32));
     d->toolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    d->toolbar->toggleViewAction()->setVisible(false);
 }
 
 MacPreferencesWindow::~MacPreferencesWindow()
