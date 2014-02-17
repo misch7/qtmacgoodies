@@ -123,7 +123,6 @@ QIcon MacStandardIcon::icon(MacStandardIconType icon, const QSize &size)
     foreach (NSRect rect, desiredRects) {
         CGImageRef cgimage = [image CGImageForProposedRect:&rect context:nil hints:nil];
         QPixmap pixmap = QtMac::fromCGImageRef(cgimage);
-        CFRelease(cgimage);
 
         result.addPixmap(pixmap);
     }
