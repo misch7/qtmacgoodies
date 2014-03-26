@@ -33,6 +33,7 @@
 #include <QDebug>
 
 #import <Cocoa/Cocoa.h>
+#import <Availability.h>
 
 static NSString *macIconNames[] = {
 
@@ -95,8 +96,11 @@ static NSString *macIconNames[] = {
     NSImageNameStatusPartiallyAvailable,
     NSImageNameStatusUnavailable,
     NSImageNameStatusNone,
+#ifdef __MAC_10_8
     NSImageNameShareTemplate,
-
+#else
+    nil,
+#endif
     nil
 };
 
