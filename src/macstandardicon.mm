@@ -96,7 +96,7 @@ static NSString *macIconNames[] = {
     NSImageNameStatusPartiallyAvailable,
     NSImageNameStatusUnavailable,
     NSImageNameStatusNone,
-#ifdef __MAC_10_8
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_8
     NSImageNameShareTemplate,
 #else
     nil,
