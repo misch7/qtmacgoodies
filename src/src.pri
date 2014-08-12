@@ -10,11 +10,13 @@ QT += macextras
 
 HEADERS += \
     $$PWD/macstandardicon.h \
-    $$PWD/macpreferenceswindow.h
+    $$PWD/macpreferenceswindow.h \
+    $$PWD/macwindow.h
 
 OBJECTIVE_SOURCES += \
     $$PWD/macstandardicon.mm \
-    $$PWD/macpreferenceswindow.mm
+    $$PWD/macpreferenceswindow.mm \
+    $$PWD/macwindow.mm
 
 INCLUDEPATH += $$PWD
 
