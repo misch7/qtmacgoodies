@@ -44,6 +44,9 @@ public:
     ~MacPreferencesWindow();
 
     int addPreferencesPanel(const QIcon &icon, const QString &title, QWidget *widget);
+    int insertPreferencesPanel(int idx, const QIcon &icon, const QString &title, QWidget *widget);
+    void removePreferencesPanel(QWidget *panel);
+    int preferencePanelCount();
 
     QIcon preferencesPanelIcon(int panelIndex) const;
     void setPreferencesPanelIcon(int panelIndex, const QIcon &icon);

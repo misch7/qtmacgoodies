@@ -106,6 +106,49 @@ int MacPreferencesWindow::addPreferencesPanel(const QIcon &icon, const QString &
     return d->panels.size()-1;
 }
 
+int MacPreferencesWindow::insertPreferencesPanel(int idx, const QIcon &icon, const QString &title, QWidget *widget)
+{
+    QAction *action = new QAction(icon, title, d->toolbar);
+    d->toolbar->insertAction(d->toolbar->actions().at(idx), action);
+
+    action->setCheckable(true);
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(toolButtonClicked()));
+
+    d->panels.insert(idx, PanelInfo(action, widget));
+
+    widget->hide();
+
+    if (idx < d->currentPanelIndex) {
+        d->currentPanelIndex++;
+    }
+
+    return d->panels.size()-1;
+}
+
+void MacPreferencesWindow::removePreferencesPanel(QWidget *panel)
+{
+    int panelIndexToRemove = 0;
+    for (int i = 0; i < d->panels.size(); ++i) {
+        const PanelInfo &panelInfo = d->panels[i];
+        if (panelInfo.panel == panel) {
+            panelIndexToRemove = i;
+            break;
+        }
+    }
+
+    if (panelIndexToRemove < d->currentPanelIndex) {
+        d->currentPanelIndex--;
+    }
+
+    const PanelInfo &panelInfo = d->panels.at(panelIndexToRemove);
+    delete panelInfo.panel;
+    delete panelInfo.action;
+    d->panels.removeAt(panelIndexToRemove);
+
+    d->displayPanel(0);
+}
+
+
 int MacPreferencesWindow::currentPanelIndex() const
 {
     return d->currentPanelIndex;
@@ -147,12 +190,10 @@ QSize MacPreferencesWindowPrivate::windowSizeForPanel(int panelIndex)
 
 void MacPreferencesWindowPrivate::displayPanel(int panelIndex)
 {
-    PanelInfo &oldPanel = panels[currentPanelIndex];
     PanelInfo &newPanel = panels[panelIndex];
 
     bool isUpdatingTheAlreadyVisiblePanel = panelIndex == currentPanelIndex;
 
-    currentPanelIndex = panelIndex;
 
     NSView *view = reinterpret_cast<NSView *>(q->effectiveWinId());
     NSRect frame = view.window.frame;
@@ -160,6 +201,8 @@ void MacPreferencesWindowPrivate::displayPanel(int panelIndex)
     static const int TitlebarHeight = 22;
 
     if (!isUpdatingTheAlreadyVisiblePanel) {
+        PanelInfo &oldPanel = panels[currentPanelIndex];
+
         oldPanel.action->setChecked(false);
 
         oldPanel.panel->hide();
@@ -171,6 +214,7 @@ void MacPreferencesWindowPrivate::displayPanel(int panelIndex)
     }
 
     newPanel.action->setChecked(true);
+    currentPanelIndex = panelIndex;
 
     QSize newSize = windowSizeForPanel(panelIndex);
     NSPoint topLeft = NSMakePoint(frame.origin.x, frame.origin.y + frame.size.height);
@@ -195,6 +239,11 @@ void MacPreferencesWindowPrivate::addCurrentPanelWidget()
     const PanelInfo &panelInfo = panels[currentPanelIndex];
     layout->addWidget(panelInfo.panel);
     panelInfo.panel->show();
+}
+
+int MacPreferencesWindow::preferencePanelCount()
+{
+    return d->panels.count();
 }
 
 void MacPreferencesWindow::toolButtonClicked()
