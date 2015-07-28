@@ -109,7 +109,7 @@ int MacPreferencesWindow::addPreferencesPanel(const QIcon &icon, const QString &
 int MacPreferencesWindow::insertPreferencesPanel(int idx, const QIcon &icon, const QString &title, QWidget *widget)
 {
     QAction *action = new QAction(icon, title, d->toolbar);
-    d->toolbar->insertAction(d->toolbar->actions().at(idx), action);
+    d->toolbar->insertAction(idx < d->toolbar->actions().size() ? d->toolbar->actions().at(idx) : 0, action);
 
     action->setCheckable(true);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(toolButtonClicked()));
