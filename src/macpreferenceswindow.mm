@@ -53,7 +53,7 @@ class MacPreferencesWindowPrivate
 {
 public:
     MacPreferencesWindowPrivate(MacPreferencesWindow *q)
-      : q(q), toolbar(0), currentPanelIndex(0)
+      : q(q), toolbar(0), currentPanelIndex(0), actionGroup(q)
     { }
 
     void displayPanel(int panelIndex);
@@ -68,6 +68,7 @@ public:
     QToolBar *toolbar;
     QList<PanelInfo> panels;
     int currentPanelIndex;
+    QActionGroup actionGroup;
 };
 
 MacPreferencesWindow::MacPreferencesWindow(QWidget *parent)
@@ -102,6 +103,7 @@ int MacPreferencesWindow::addPreferencesPanel(const QIcon &icon, const QString &
     connect(action, SIGNAL(triggered(bool)), this, SLOT(toolButtonClicked()));
 
     d->panels.append(PanelInfo(action, widget));
+    d->actionGroup.addAction(action);
 
     return d->panels.size()-1;
 }
@@ -115,10 +117,11 @@ int MacPreferencesWindow::insertPreferencesPanel(int idx, const QIcon &icon, con
     connect(action, SIGNAL(triggered(bool)), this, SLOT(toolButtonClicked()));
 
     d->panels.insert(idx, PanelInfo(action, widget));
+    d->actionGroup.addAction(action);
 
     widget->hide();
 
-    if (idx < d->currentPanelIndex) {
+    if (idx <= d->currentPanelIndex) {
         d->currentPanelIndex++;
     }
 
@@ -132,6 +135,7 @@ void MacPreferencesWindow::removePreferencesPanel(QWidget *panel)
         const PanelInfo &panelInfo = d->panels[i];
         if (panelInfo.panel == panel) {
             panelIndexToRemove = i;
+            d->actionGroup.removeAction(panelInfo.action);
             break;
         }
     }
