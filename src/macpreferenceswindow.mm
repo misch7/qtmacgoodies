@@ -148,6 +148,16 @@ void MacPreferencesWindow::removePreferencesPanel(QWidget *panel)
     d->displayPanel(0);
 }
 
+int MacPreferencesWindow::indexForPanel(QWidget *panel) {
+    for (int i = 0; i < d->panels.size(); ++i) {
+        const PanelInfo &panelInfo = d->panels[i];
+        if (panelInfo.panel == panel) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 
 int MacPreferencesWindow::currentPanelIndex() const
 {
