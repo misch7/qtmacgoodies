@@ -125,6 +125,11 @@ int MacPreferencesWindow::insertPreferencesPanel(int idx, const QIcon &icon, con
     return d->panels.size()-1;
 }
 
+QAction *MacPreferencesWindow::insertSeparator(int idx)
+{
+    return d->toolbar->insertSeparator(d->toolbar->actions().at(idx));
+}
+
 void MacPreferencesWindow::removePreferencesPanel(QWidget *panel)
 {
     int panelIndexToRemove = 0;
@@ -146,6 +151,11 @@ void MacPreferencesWindow::removePreferencesPanel(QWidget *panel)
     d->panels.removeAt(panelIndexToRemove);
 
     d->displayPanel(0);
+}
+
+void MacPreferencesWindow::removeSeparator(QAction *action)
+{
+    d->toolbar->removeAction(action);
 }
 
 int MacPreferencesWindow::indexForPanel(QWidget *panel) {

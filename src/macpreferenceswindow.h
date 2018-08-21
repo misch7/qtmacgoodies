@@ -45,6 +45,8 @@ public:
 
     int addPreferencesPanel(const QIcon &icon, const QString &title, QWidget *widget);
     int insertPreferencesPanel(int idx, const QIcon &icon, const QString &title, QWidget *widget);
+    QAction *insertSeparator(int idx);
+    void removeSeparator(QAction *action);
     void removePreferencesPanel(QWidget *panel);
     int indexForPanel(QWidget *panel);
     int preferencePanelCount();
