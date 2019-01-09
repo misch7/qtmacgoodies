@@ -28,6 +28,7 @@
  */
 
 #include "macpreferenceswindow.h"
+#include "macwindow.h"
 
 #include <QVBoxLayout>
 #include <QToolBar>
@@ -205,7 +206,10 @@ void MacPreferencesWindowPrivate::displayPanel(int panelIndex)
     bool isUpdatingTheAlreadyVisiblePanel = panelIndex == currentPanelIndex;
 
 
-    NSView *view = reinterpret_cast<NSView *>(q->effectiveWinId());
+    NSView *view = MacWindow::nsview(q);
+    if (!view) {
+        return;
+    }
     NSRect frame = view.window.frame;
 
     static const int TitlebarHeight = 22;
