@@ -30,9 +30,18 @@
 #ifndef MAC_WINDOW_H
 #define MAC_WINDOW_H
 
+#ifdef __OBJC__
+@class NSView;
+#else
+class NSView;
+#endif
+
 class QWidget;
 class MacWindow {
 public:
+    // Retrieve the Cocoa NSView associated with a QWidget
+    static NSView *nsview(QWidget *w);
+
     static void bringToFront(QWidget *w);
 };
 
