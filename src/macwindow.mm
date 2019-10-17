@@ -32,22 +32,35 @@
 #include <QtMacExtras>
 #include <QDebug>
 #include <QWidget>
+#include <QGuiApplication>
+#include <qpa/qplatformnativeinterface.h> // private Qt header!
 
 #import <Cocoa/Cocoa.h>
 #import <Availability.h>
 
-// viel hilft viel ;-)
+NSView *MacWindow::nsview(QWidget *w)
+{
+    // Code similar to getEmbeddableView() in QMacNativeWidget
+    w->winId();
+    w->windowHandle()->create();
+    QPlatformNativeInterface *platformNativeInterface = QGuiApplication::platformNativeInterface();
+    return (NSView *)platformNativeInterface->nativeResourceForWindow("nsview", w->windowHandle());
+}
+
 void MacWindow::bringToFront(QWidget *w) {
     Q_UNUSED(w);
 
     NSApplication *nsapp = [NSApplication sharedApplication];
     [nsapp activateIgnoringOtherApps:YES];
 
-    NSView *nsview = (NSView*)w->winId();
-    if (![nsview isKindOfClass:[NSView class]]) {
+    NSView *view = nsview(w);
+    if (!view) {
         return;
     }
-    NSWindow *nswin = [nsview window];
+    if (![view isKindOfClass:[NSView class]]) {
+        return;
+    }
+    NSWindow *nswin = [view window];
     if ([nswin isKindOfClass:[NSWindow class]]) {
         [nswin makeKeyAndOrderFront:nswin];
         [nswin setOrderedIndex:0];
