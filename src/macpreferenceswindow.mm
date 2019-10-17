@@ -296,6 +296,12 @@ bool MacPreferencesWindow::event(QEvent *event)
     switch (event->type()) {
     case QEvent::Show:
         d->displayPanel(d->currentPanelIndex);
+
+        // BUGFIX for Qt 5.12.5 - Redraw the ToolBar:
+        //        After hiding and re-opening the settings window,
+        //        the ToolBar background was transparent.
+        setUnifiedTitleAndToolBarOnMac(true);
+
         break;
     default:
         break;
